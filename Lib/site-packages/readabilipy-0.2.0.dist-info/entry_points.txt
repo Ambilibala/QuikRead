@@ -1,0 +1,3 @@
+[console_scripts]
+readabilipy = readabilipy.__main__:main
+

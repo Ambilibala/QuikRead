@@ -1,0 +1,19 @@
+<!-- templates/feed_page.html -->
+{% extends "base.html" %}
+{% block title %}Feed Page{% endblock %}
+{% block content %}
+    <h1>Your Feed</h1>
+    {% if articles %}
+        {% for article in articles %}
+            <div class="article">
+                <h2>{{ article.article.title }}</h2>
+                <img src="{{article.article.thumbnail_url}}" alt="article image" height="200" width="300"><br>
+                <a href="{% url 'article_content' article.id %}" >Read more</a>
+                <p>Source: {{ article.article.source.name }}</p>
+                <p>Published: {{ article.article.published_date }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No articles found.</p>
+    {% endif %}
+{% endblock %}

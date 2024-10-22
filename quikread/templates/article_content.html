@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ article.article.title }}</title>
+</head>
+<body>
+    <h1>{{ article.article.title }}</h1>
+    <p><strong>Source:</strong> {{ article.article.source.name }}</p>
+    <p><strong>Published Date:</strong> {{ article.article.published_date }}</p>
+    <div>
+        {{ article.article.html_content|safe }}
+    </div>
+</body>
+</html>
+{%endblock content %}
