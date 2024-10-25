@@ -27,6 +27,7 @@ class UserArticle(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unread')
     read_date = models.DateTimeField(null=True, blank=True)
 
+
     class Meta:
         unique_together = ('user', 'article')
     def __str__(self):
@@ -34,6 +35,10 @@ class UserArticle(models.Model):
     def mark_as_read(self):
         self.status = 'read'
         self.read_date = timezone.now()
+        self.save()
+    def mark_as_unread(self):
+        self.status = 'read'
+        self.read_date = None
         self.save()
     
 class SavedArticle(models.Model):

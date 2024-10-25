@@ -1,0 +1,24 @@
+<!-- templates/feed_page.html -->
+{% extends "base.html" %}
+{% block title %}Feed Page{% endblock %}
+{% block content %}
+    <h1>Saved Articles</h1>
+    {% if articles %}
+        {% for saved_article in articles %}
+            <div class="article">
+                <h2>{{ saved_article.article.title }}</h2>
+                <img src="{{saved_article.article.thumbnail_url}}" alt="article image" height="200" width="300"><br>
+                <a href="{% url 'article_content' saved_article.article.id %}" >Read more</a>
+                {% if saved_article.is_saved %}
+                    <a href="{% url 'unsave_article' saved_article.article.id %}"><button>Unsave Article</button></a>
+                {% else %}
+                    <a href="{% url 'save_article' saved_article.article.id %}"><button>Save Article</button></a>
+                {% endif %}
+                <p>Source: {{ saved_article.article.source.name }}</p>
+                <p>Published: {{ saved_article.article.published_date }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No articles found.</p>
+    {% endif %}
+{% endblock %}

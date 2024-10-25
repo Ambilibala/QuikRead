@@ -27,6 +27,7 @@
                 {% for category in categories %}
                     <li><a href="{% url 'feed_by_category' category.id %}">{{ category.name }}</a></li>
                 {% endfor %}
+                <a href="{% url 'show_saved_articles' %}"><h2>Saved Articles</h2></a>
             </ul>
         </div>
     </header>

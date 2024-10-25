@@ -7,6 +7,11 @@
     <p>status:{{article.user_article.status}}</p>
 </head>
 <body>
+    {% if is_saved %}
+                    <a href="{% url 'unsave_article' article.id %}"><button>Unsave Article</button></a>
+                {% else %}
+                    <a href="{% url 'save_article' article.id %}"><button>Save Article</button></a>
+                {% endif %}
     <h1>{{ article.title }}</h1>
     <p><strong>Source:</strong> {{ article.source.name }}</p>
     <p><strong>Published Date:</strong> {{ article.published_date }}</p>
