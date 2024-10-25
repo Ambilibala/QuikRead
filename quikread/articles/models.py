@@ -37,7 +37,7 @@ class UserArticle(models.Model):
         self.read_date = timezone.now()
         self.save()
     def mark_as_unread(self):
-        self.status = 'read'
+        self.status = 'unread'
         self.read_date = None
         self.save()
     

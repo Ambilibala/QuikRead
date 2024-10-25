@@ -4,20 +4,70 @@
 <html>
 <head>
     <title>{{ article.title }}</title>
-    <p>status:{{article.user_article.status}}</p>
+    <p>Status: {{ user_article.status }}</p>
 </head>
 <body>
     {% if is_saved %}
-                    <a href="{% url 'unsave_article' article.id %}"><button>Unsave Article</button></a>
-                {% else %}
-                    <a href="{% url 'save_article' article.id %}"><button>Save Article</button></a>
-                {% endif %}
+        <a href="{% url 'unsave_article' article.id %}" onclick="toggleSave(event, '{{ article.id }}', false)"><button>Unsave Article</button></a>
+    {% else %}
+        <a href="{% url 'save_article' article.id %}" onclick="toggleSave(event, '{{ article.id }}', true)"><button>Save Article</button></a>
+    {% endif %}
     <h1>{{ article.title }}</h1>
     <p><strong>Source:</strong> {{ article.source.name }}</p>
     <p><strong>Published Date:</strong> {{ article.published_date }}</p>
     <div>
         {{ article.html_content|safe }}
     </div>
+    <div>
+        {% if user_article.status == 'read' %}
+            <a href="{% url 'mark_article_as_unread' article.id %}" onclick="toggleReadStatus(event, '{{ article.id }}', false)"><button>Mark as Unread</button></a>
+        {% else %}
+            <a href="{% url 'mark_article_as_read' article.id %}" onclick="toggleReadStatus(event, '{{ article.id }}', true)"><button>Mark as Read</button></a>
+        {% endif %}
+    </div>
 </body>
 </html>
-{%endblock content %}
+<script>
+function toggleSave(event, articleId, save) {
+    event.preventDefault();
+    const url = save ? `{% url 'save_article' 1 %}`.replace('1', articleId) : `{% url 'unsave_article' 1 %}`.replace('1', articleId);
+    const button = event.target;
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(response => response.json()).then(data => {
+        if (data.status === 'saved') {
+            button.textContent = 'Unsave Article';
+            button.setAttribute('onclick', `toggleSave(event, '${articleId}', false)`);
+        } else {
+            button.textContent = 'Save Article';
+            button.setAttribute('onclick', `toggleSave(event, '${articleId}', true)`);
+        }
+    });
+}
+
+function toggleReadStatus(event, articleId, markAsRead) {
+    event.preventDefault();
+    const url = markAsRead ? `{% url 'mark_article_as_read' 1 %}`.replace('1', articleId) : `{% url 'mark_article_as_unread' 1 %}`.replace('1', articleId);
+    const button = event.target;
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(response => response.json()).then(data => {
+        if (data.status === 'read') {
+            button.textContent = 'Mark as Unread';
+            button.setAttribute('onclick', `toggleReadStatus(event, '${articleId}', false)`);
+        } else {
+            button.textContent = 'Mark as Read';
+            button.setAttribute('onclick', `toggleReadStatus(event, '${articleId}', true)`);
+        }
+    });
+}
+</script>
+{% endblock %}
