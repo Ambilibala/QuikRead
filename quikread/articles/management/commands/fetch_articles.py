@@ -16,17 +16,34 @@ User = get_user_model()
 
 class Command(BaseCommand):
     help = 'Fetch articles from all user-subscribed sources at once'
+    def add_arguments(self, parser):
+        parser.add_argument('--username', type=str, help='Username for fetching articles')
 
+        
     def handle(self, *args, **kwargs):
         # Fetch all unique subscriptions
-        subscriptions = UserSubscription.objects.select_related('user', 'source').all()
+        username = kwargs['username']
+        if not username:
+            self.stdout.write(self.style.ERROR('Username is required. Use --username to specify it.'))
+            return
+        
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            self.stdout.write(self.style.ERROR(f'User {username} does not exist.'))
+            return
+
+        # Fetch all unique subscriptions for this user
+        subscriptions = UserSubscription.objects.filter(user=user).select_related('source').order_by('-subscribed_date')
+
 
         for subscription in subscriptions:
             source = subscription.source
+            user = subscription.user
             print(f'Fetching articles from source: {source.name} for user: {subscription.user.username}')
             articles = self.parse_feed(source.url)
             for article_link in articles:
-                if not Article.objects.filter(article_url=article_link['link']).exists():
+                if not UserArticle.objects.filter(user=user,article__article_url=article_link['link']).exists():
                     parsed_article = self.parse_article(article_link)
                     article = self.create_article_object(parsed_article, source)
                     if article:
@@ -66,6 +83,7 @@ class Command(BaseCommand):
             'article_text': article_text,
             'article_url': article_link['link'],
             'image_url': article_news.top_image,
+            'published_date':article_news.publish_date,
             'description': article_link['description']
         }
 
@@ -77,7 +95,7 @@ class Command(BaseCommand):
                 'html_content': article_data['article_html_content'],
                 'text_summary': article_data['article_text'],
                 'thumbnail_url': article_data['image_url'],
-                'published_date': timezone.now(),
+                'published_date': article_data.get('published_date',timezone.now()),
                 'source': source
             }
         )
@@ -88,7 +106,7 @@ class Command(BaseCommand):
             article.html_content = article_data['article_html_content']
             article.text_summary = article_data['article_text']
             article.thumbnail_url = article_data['image_url']
-            article.published_date = timezone.now()
+            article.published_date = article_data['published_date']
             article.source = source
             article.save()
         return article

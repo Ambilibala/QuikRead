@@ -3,14 +3,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ article.article.title }}</title>
+    <title>{{ article.title }}</title>
+    <p>status:{{article.user_article.status}}</p>
 </head>
 <body>
-    <h1>{{ article.article.title }}</h1>
-    <p><strong>Source:</strong> {{ article.article.source.name }}</p>
-    <p><strong>Published Date:</strong> {{ article.article.published_date }}</p>
+    <h1>{{ article.title }}</h1>
+    <p><strong>Source:</strong> {{ article.source.name }}</p>
+    <p><strong>Published Date:</strong> {{ article.published_date }}</p>
     <div>
-        {{ article.article.html_content|safe }}
+        {{ article.html_content|safe }}
     </div>
 </body>
 </html>

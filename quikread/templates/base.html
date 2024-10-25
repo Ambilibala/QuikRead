@@ -21,6 +21,14 @@
                 {% endif %}
             </ul>
         </nav>
+        <div id="sidebar">
+            <h3>Categories</h3>
+            <ul>
+                {% for category in categories %}
+                    <li><a href="{% url 'feed_by_category' category.id %}">{{ category.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
     </header>
     <main>
         {% block content %}{% endblock %}

@@ -1,16 +1,21 @@
-<!-- templates/source_list.html -->
 {% extends "base.html" %}
 {% block title %}Source List{% endblock %}
 {% block content %}
     <h1>Sources</h1>
-    {% for source in sources %}
+    {% for source in source_info %}
         <div class="source">
             <h2>{{ source.name }}</h2>
-            <!-- <p>{{ source.url }}</p> -->
-            <form method="POST" action="{% url 'subscribe' source.id %}">
-                {% csrf_token %}
-                <button type="submit">Subscribe</button>
-            </form>
+            {% if source.is_subscribed %}
+                <form method="POST" action="{% url 'unsubscribe' source.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Unsubscribe</button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'subscribe' source.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Subscribe</button>
+                </form>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock %}

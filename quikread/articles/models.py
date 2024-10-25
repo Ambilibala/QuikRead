@@ -5,10 +5,6 @@ from django.utils import timezone
 
 # Create your models here.
 class Article(models.Model):
-    STATUS_CHOICES = [
-        ('unread', 'Unread'),
-        ('read', 'Read')
-    ]
 
     title = models.CharField(max_length=1000)
     html_content = models.TextField()
@@ -27,7 +23,7 @@ class UserArticle(models.Model):
         ('read', 'Read'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE,related_name='user_article')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unread')
     read_date = models.DateTimeField(null=True, blank=True)
 
