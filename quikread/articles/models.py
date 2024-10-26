@@ -12,6 +12,7 @@ class Article(models.Model):
     thumbnail_url = models.URLField(max_length=500,blank=True, null=True)
     article_url = models.URLField(max_length=500,unique=True)
     published_date = models.DateTimeField()
+    
     source = models.ForeignKey(Source, on_delete=models.CASCADE)
     
     def __str__(self):
@@ -25,6 +26,7 @@ class UserArticle(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE,related_name='user_article')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unread')
+    fetched_date = models.DateTimeField(default=timezone.now) 
     read_date = models.DateTimeField(null=True, blank=True)
 
 

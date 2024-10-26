@@ -2,9 +2,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from feeds.models import Source, UserSubscription,Category
 from articles.models import Article,UserArticle
+from django.shortcuts import render, redirect
+from articles.tasks import fetch_all_articles
+
 # Create your views here.
-def home_page(request):
-    return render(request,'home_page.html')
+def home_page(request): # You can customize the values as needed
+    return render(request, 'home_page.html')
+    # return render(request,'home_page.html')
 def display_sources(request):
     sources = Source.objects.all()
     user_subscriptions = UserSubscription.objects.filter(user=request.user).values_list('source_id', flat=True)
@@ -24,6 +28,7 @@ def subscribe_feed(request, source_id):
     user = request.user
 
     UserSubscription.objects.get_or_create(user=user, source=source)
+    fetch_all_articles.delay()
     return redirect('source_list')  # Redirect to a relevant view after subscribing
 @login_required
 def unsubscribe_feed(request, source_id):

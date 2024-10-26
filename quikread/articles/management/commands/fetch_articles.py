@@ -11,45 +11,55 @@ from django.utils import timezone
 from feeds.models import Source, UserSubscription
 from articles.models import Article, UserArticle
 from django.contrib.auth import get_user_model
-
+import logging
+logger = logging.getLogger(__name__)
 User = get_user_model()
+
+from celery import current_app as celery_app
 
 class Command(BaseCommand):
     help = 'Fetch articles from all user-subscribed sources at once'
+
     def add_arguments(self, parser):
         parser.add_argument('--username', type=str, help='Username for fetching articles')
 
-        
     def handle(self, *args, **kwargs):
-        # Fetch all unique subscriptions
         username = kwargs['username']
         if not username:
             self.stdout.write(self.style.ERROR('Username is required. Use --username to specify it.'))
             return
-        
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             self.stdout.write(self.style.ERROR(f'User {username} does not exist.'))
             return
-
-        # Fetch all unique subscriptions for this user
         subscriptions = UserSubscription.objects.filter(user=user).select_related('source').order_by('-subscribed_date')
-
-
         for subscription in subscriptions:
-            source = subscription.source
-            user = subscription.user
-            print(f'Fetching articles from source: {source.name} for user: {subscription.user.username}')
-            articles = self.parse_feed(source.url)
-            for article_link in articles:
-                if not UserArticle.objects.filter(user=user,article__article_url=article_link['link']).exists():
-                    parsed_article = self.parse_article(article_link)
-                    article = self.create_article_object(parsed_article, source)
-                    if article:
-                        self.link_articles_to_users(article, subscription.user)
+            logger.debug(f'Sending task for {subscription.source.url} and {user.username}')
+            celery_app.send_task('articles.tasks.fetch_article', kwargs={'url': subscription.source.url, 'username': user.username})
 
-    def parse_feed(self, url):
+
+    @staticmethod
+    @celery_app.task(name='articles.tasks.fetch_article')
+    def fetch_article(url=None, username=None):
+        logger.debug(f'fetch_article called with url: {url}, username: {username}')
+        if url is None or username is None:
+            logger.error('URL or username not provided')
+            return
+
+        article_links = Command.parse_feed(url)
+        logger.debug(f'Found {len(article_links)} articles')
+        user = User.objects.get(username=username)
+        for article_link in article_links:
+            if not UserArticle.objects.filter(user=user, article__article_url=article_link['link']).exists():
+                parsed_article = Command.parse_article(article_link)
+                article = Command.create_article_object(parsed_article, Source.objects.get(url=url))
+                if article:
+                    Command.link_articles_to_users(article, user)
+
+    @staticmethod
+    def parse_feed(url):
+        print(f'Parsing feed from {url}')
         article_links = []
         feed = feedparser.parse(url)
         for entry in feed.entries:
@@ -59,7 +69,9 @@ class Command(BaseCommand):
             })
         return article_links
 
-    def parse_article(self, article_link):
+    @staticmethod
+    def parse_article(article_link):
+        print(f'Parsing article {article_link["link"]}')
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0"
         }
@@ -83,11 +95,14 @@ class Command(BaseCommand):
             'article_text': article_text,
             'article_url': article_link['link'],
             'image_url': article_news.top_image,
-            'published_date':article_news.publish_date,
+            'published_date': article_news.publish_date,
+            
             'description': article_link['description']
         }
 
-    def create_article_object(self, article_data, source):
+    @staticmethod
+    def create_article_object(article_data, source):
+        print(f'Creating article object for {article_data["title"]}')
         article, created = Article.objects.get_or_create(
             article_url=article_data['article_url'],
             defaults={
@@ -95,13 +110,11 @@ class Command(BaseCommand):
                 'html_content': article_data['article_html_content'],
                 'text_summary': article_data['article_text'],
                 'thumbnail_url': article_data['image_url'],
-                'published_date': article_data.get('published_date',timezone.now()),
+                'published_date': article_data.get('published_date', timezone.now()),
                 'source': source
             }
         )
-
         if not created:
-        # If the article already exists, update the fields
             article.title = article_data['title']
             article.html_content = article_data['article_html_content']
             article.text_summary = article_data['article_text']
@@ -111,6 +124,9 @@ class Command(BaseCommand):
             article.save()
         return article
 
+    @staticmethod
+    def link_articles_to_users(article, user):
+        print(f'Linking article {article.title} to user {user.username}')
+        UserArticle.objects.get_or_create(user=user, article=article,fetched_date = timezone.now())
 
-    def link_articles_to_users(self, article, user):
-        UserArticle.objects.get_or_create(user=user, article=article)
+

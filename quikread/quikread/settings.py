@@ -118,7 +118,20 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+#CELERY
 
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULE = {
+    'fetch_articles': {
+        'task': 'articles.tasks.fetch_all_articles',
+        'schedule': 60.0,  # every  minute
+    },
+    'cleanup_old_articles': {
+        'task': 'articles.tasks.cleanup_old_articles',
+        'schedule': 43200.0,  # every 12 hours
+    },
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -133,3 +146,16 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
