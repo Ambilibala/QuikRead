@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}My Feed Reader{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <header>
@@ -33,9 +34,12 @@
     </header>
     <main>
         {% block content %}{% endblock %}
+        {% block extra_js %}{% endblock %}
     </main>
     <footer>
         <p>&copy; 2024 My Feed Reader</p>
     </footer>
+    <button id="topBtn" title="Go to top">Top</button>
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
