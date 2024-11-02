@@ -16,5 +16,5 @@ def fetch_all_articles():
 
 @shared_task
 def cleanup_old_articles():
-    threshold_time = timezone.now() - timezone.timedelta(hours=12)
-    Article.objects.filter(article__published_date__lt=threshold_time).delete()
+    threshold_time = timezone.now() - timezone.timedelta(hours=24)
+    Article.objects.filter(published_date__lt=threshold_time).delete()
