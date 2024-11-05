@@ -47,7 +47,7 @@ class SavedArticle(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     saved_date = models.DateTimeField(auto_now_add=True)
-    notes = models.TextField(blank=True)
+
 
     class Meta:
         unique_together = ('user', 'article')
