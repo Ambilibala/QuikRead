@@ -8,5 +8,6 @@ urlpatterns = [
     path('unsave_article/<article_id>',views.unsave_article,name = 'unsave_article'),
     path('show_saved_articles',views.show_saved_articles,name = 'show_saved_articles'),
     path('mark_read/<article_id>',views.mark_article_as_read,name = 'mark_article_as_read'),
-    path('mark_unread/<article_id>',views.mark_article_as_unread,name = 'mark_article_as_unread')
+    path('mark_unread/<article_id>',views.mark_article_as_unread,name = 'mark_article_as_unread'),
+    path('show_summary/<int:article_id>/',views.show_summary,name = "show_summary")
 ]

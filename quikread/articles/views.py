@@ -1,9 +1,12 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from .models import UserArticle,Article,SavedArticle
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.http import JsonResponse
-
+import google.generativeai as genai
+from django.http import JsonResponse
+from django.conf import settings
 # Create your views here.
 @login_required
 def view_articles(request):
@@ -69,3 +72,17 @@ def mark_article_as_unread(request, article_id):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'status': 'unread'})
     return redirect('article_content', article_id=article_id)
+
+@login_required
+@csrf_exempt
+def show_summary(request, article_id):
+    if request.method == 'POST':
+        try:
+            article = Article.objects.get(id=article_id)
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(article.html_content + " generate a summary in a single paragraph")
+            summary = response.text
+            return JsonResponse({'summary': summary})
+        except Article.DoesNotExist:
+            return JsonResponse({'error': 'Article not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request'}, status=400)

@@ -5,6 +5,10 @@
 <head>
     <title>{{ article.title }}</title>
     <p>Status: {{ user_article.status }}</p>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        const csrfToken = '{{ csrf_token }}';
+    </script>
 </head>
 <body>
     {% if is_saved %}
@@ -15,9 +19,14 @@
     <h1>{{ article.title }}</h1>
     <p><strong>Source:</strong> {{ article.source.name }}</p>
     <p><strong>Published Date:</strong> {{ article.published_date }}</p>
-    <div>
-        {{ article.html_content|safe }}
+
+    <div id="content">
+        <button id="toggleSummary" onclick="toggleSummary('{{ article.id }}')">Show Summary</button>
+        <div id="articleContent">{{ article.html_content|safe }}</div>
+        <div id="articleSummary" style="display: none;"></div>
+
     </div>
+
     <div>
         {% if user_article.status == 'read' %}
             <a href="{% url 'mark_article_as_unread' article.id %}" onclick="toggleReadStatus(event, '{{ article.id }}', false)"><button>Mark as Unread</button></a>
@@ -66,8 +75,41 @@ function toggleReadStatus(event, articleId, markAsRead) {
         } else {
             button.textContent = 'Mark as Read';
             button.setAttribute('onclick', `toggleReadStatus(event, '${articleId}', true)`);
-        }
-    });
+    }});
+}
+
+function toggleSummary(articleId) {
+    const button = document.getElementById('toggleSummary');
+    const articleContent = document.getElementById('articleContent');
+    const articleSummary = document.getElementById('articleSummary');
+
+    if (articleSummary.style.display === 'none') {
+        // Fetch summary from the server when "Show Summary" is clicked
+        fetch(`/show_summary/${articleId}/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token for security
+            },
+            body: new FormData()
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.summary) {
+                // Display the summary and hide the original content
+                articleSummary.innerText = data.summary;
+                articleSummary.style.display = 'block';
+                articleContent.style.display = 'none';
+                button.textContent = 'Show Original Content';
+            }
+        })
+        .catch(error => console.error('Error fetching summary:', error));
+    } else {
+        // Show original content and hide the summary
+        articleSummary.style.display = 'none';
+        articleContent.style.display = 'block';
+        button.textContent = 'Show Summary';
+    }
 }
 </script>
 {% endblock %}

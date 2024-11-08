@@ -11,23 +11,24 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Initialise environment variables
+env = environ.Env()
+env_file = BASE_DIR / '.env'
+env.read_env(env_file)
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--6()guka1zfvq=njjr0ytr-vd1sga+e@f_$pul5c8h^xc%vf2b'
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
+GOOGLE_API_KEY = env('GOOGLE_API_KEY')
 # Application definition
 
 INSTALLED_APPS = [
@@ -80,11 +81,11 @@ WSGI_APPLICATION = 'quikread.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'quikread',
-        'HOST':'localhost',
-        'PORT':'5432',
-        'USER':'postgres',
-        'PASSWORD':'anand'
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -120,8 +121,8 @@ USE_I18N = True
 USE_TZ = True
 #CELERY
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_BEAT_SCHEDULE = {
     'fetch_articles': {
         'task': 'articles.tasks.fetch_all_articles',
@@ -129,7 +130,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'cleanup_old_articles': {
         'task': 'articles.tasks.cleanup_old_articles',
-        'schedule': 120.0,  # every 2minutes hours
+        'schedule': 120.0,  # every 2minutes 
     },
 }
 

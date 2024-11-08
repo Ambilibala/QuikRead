@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 html_content = await response.text()
                 doc = Document(html_content)
                 parsed_content = doc.summary()
-
+                
                 # Use BeautifulSoup for metadata and thumbnail extraction
                 soup = BeautifulSoup(html_content, "html.parser")
                 og_image = soup.find("meta", property="og:image")
