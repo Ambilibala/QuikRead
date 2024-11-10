@@ -1,21 +1,108 @@
 {% extends "base.html" %}
+
 {% block title %}Source List{% endblock %}
+
 {% block content %}
-    <h1>Sources</h1>
-    {% for source in source_info %}
-        <div class="source">
-            <h2>{{ source.name }}</h2>
-            {% if source.is_subscribed %}
-                <form method="POST" action="{% url 'unsubscribe' source.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Unsubscribe</button>
-                </form>
-            {% else %}
-                <form method="POST" action="{% url 'subscribe' source.id %}">
-                    {% csrf_token %}
-                    <button type="submit">Subscribe</button>
-                </form>
-            {% endif %}
+<div class="section pt-4">
+    <div class="container">
+        <!-- Header -->
+        <div class="level mb-5">
+            <div class="level-left">
+                <h1 class="title has-text-light">
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fas fa-newspaper"></i>
+                        </span>
+                        <span>News Sources</span>
+                    </span>
+                </h1>
+            </div>
         </div>
-    {% endfor %}
+
+        <!-- Sources Content -->
+        <div class="sources-container">
+            {% for language_data in language_info %}
+                <div class="language-section mb-6">
+                    <!-- Language Header -->
+                    <div class="level is-mobile has-background-dark px-4 py-3 rounded">
+                        <div class="level-left">
+                            <h2 class="title is-4 has-text-light mb-0">
+                                <span class="icon-text">
+                                    <span class="icon">
+                                        <i class="fas fa-globe"></i>
+                                    </span>
+                                    <span>{{ language_data.language.name }}</span>
+                                </span>
+                            </h2>
+                        </div>
+                    </div>
+
+                    <!-- Categories Grid -->
+                    <div class="columns is-multiline mt-4">
+                        {% for category_data in language_data.categories %}
+                            <div class="column is-4">
+                                <div class="box has-background-dark-lighter">
+                                    <!-- Category Header -->
+                                    <h3 class="subtitle is-5 has-text-light mb-4">
+                                        <span class="icon-text">
+                                            <span class="icon">
+                                                <i class="fas fa-folder"></i>
+                                            </span>
+                                            <span>{{ category_data.category.name }}</span>
+                                        </span>
+                                    </h3>
+
+                                    <!-- Sources List -->
+                                    <div class="sources-list">
+                                        {% for source in category_data.sources %}
+                                            <div class="source-item mb-3">
+                                                <div class="card has-background-dark">
+                                                    <div class="card-content p-3">
+                                                        <div class="level is-mobile">
+                                                            <div class="level-left">
+                                                                <h4 class="has-text-light is-size-6">
+                                                                    <span class="icon-text">
+                                                                        <span class="icon">
+                                                                            <i class="fas fa-rss"></i>
+                                                                        </span>
+                                                                        <span>{{ source.name }}</span>
+                                                                    </span>
+                                                                </h4>
+                                                            </div>
+                                                            <div class="level-right">
+                                                                {% if source.id in user_subscriptions %}
+                                                                    <form method="POST" action="{% url 'unsubscribe' source.id %}" class="subscribe-form">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="button is-small is-danger is-light" title="Unsubscribe">
+                                                                            <span class="icon">
+                                                                                <i class="fas fa-minus-circle"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </form>
+                                                                {% else %}
+                                                                    <form method="POST" action="{% url 'subscribe' source.id %}" class="subscribe-form">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit" class="button is-small is-primary is-light" title="Subscribe">
+                                                                            <span class="icon">
+                                                                                <i class="fas fa-plus-circle"></i>
+                                                                            </span>
+                                                                        </button>
+                                                                    </form>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

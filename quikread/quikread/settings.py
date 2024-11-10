@@ -130,7 +130,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'cleanup_old_articles': {
         'task': 'articles.tasks.cleanup_old_articles',
-        'schedule': 120.0,  # every 2minutes 
+        'schedule': 3600,  # every 2minutes 
     },
 }
 

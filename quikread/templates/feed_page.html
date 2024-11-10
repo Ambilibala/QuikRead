@@ -1,21 +1,61 @@
 {% extends "base.html" %}
-{% block title %}Feed Page
-{% endblock %}
+{% block title %}Feed Page{% endblock %}
 
 {% block content %}
-    <h1>Your Feed</h1>
-    {% if articles %}
-        {% for article_obj in articles %}
-            <div class="article {% if article_obj.status == 'read' %}read{% else %}unread{% endif %}">
-                <h2>{{ article_obj.article.title }}</h2>
-                <img src="{{ article_obj.article.thumbnail_url }}" alt="article image" height="200" width="300"><br>
-                <a href="{% url 'article_content' article_obj.article.id %}">Read more</a>
-                <p>Source: {{ article_obj.article.source.name }}</p>
-                <p>Published: {{ article_obj.article.published_date }}</p>
-                <p>Status: {{ article_obj.status|capfirst }}</p>
+<section class="section" style="background-color: #1a1a1a;">
+    <div class="container">
+        <h1 class="title is-2 has-text-primary mb-6" style="color: #03e683 !important;">Feed</h1>
+        
+        {% if articles %}
+            <div class="articles-container">
+                {% for article_obj in articles %}
+                <a href="{% url 'article_content' article_obj.article.id %}">
+                    <div class="custom-card mb-4 {% if article_obj.status == 'read' %}read{% endif %}" 
+                         style="background-color: #2c2c2c; border-radius: 8px; overflow: hidden;">
+                        <div class="columns is-marginless">
+                            <!-- Thumbnail Column -->
+                            <div class="column is-one-third">
+                                <figure class="image is-4by3">
+                                    <img src="{{ article_obj.article.thumbnail_url }}" 
+                                         alt="Article image"
+                                         style="object-fit: cover;">
+                                </figure>
+                            </div>
+                            
+                            <!-- Content Column -->
+                            <div class="column">
+                                <div class="card-content" style="padding: 1.5rem;">
+                                    <h2 class="title is-4 mb-4" style="color: white !important;">
+                                        {{ article_obj.article.title }}
+                                    </h2>
+                                    
+                                    <div class="meta-info mb-4" style="color: #888;">
+                                        <p class="mb-2">
+                                
+                                            <span class="ml-2" style="color: #03e683">{{ article_obj.article.source.name }}</span>
+                                        </p>
+                                        <p>
+                                            <span class="ml-2" style="color: #03e683">{{ article_obj.article.published_date }}</span>
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- <a href="{% url 'article_content' article_obj.article.id %}" 
+                                       class="button read-more-button"
+                                       style="background-color: #03e683; color: #1a1a1a; border: none;">
+                                        Read more
+                                    </a> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
-        {% endfor %}
-    {% else %}
-        <p>No articles found.</p>
-    {% endif %}
+        {% else %}
+            <div class="has-text-centered">
+                <p class="subtitle" style="color: #888 !important;">No articles found.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

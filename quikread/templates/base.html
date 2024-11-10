@@ -1,45 +1,47 @@
-<!-- templates/base.html -->
- {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My Feed Reader{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="has-background-dark has-text-light">
     <header>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'feed_page' %}">Feeds</a></li>
-                <li><a href="{% url 'source_list' %}">Sources</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-        <div id="sidebar">
-            <h3>Categories</h3>
-            <ul>
-                {% for category in categories %}
-                    <li><a href="{% url 'feed_by_category' category.id %}">{{ category.name }}</a></li>
-                {% endfor %}
-                <a href="{% url 'show_saved_articles' %}"><h2>Saved Articles</h2></a>
-            </ul>
-        </div>
+        {% include 'navbar.html' %}
     </header>
-    <main>
-        {% block content %}{% endblock %}
-        {% block extra_js %}{% endblock %}
+    <main class="columns is-gapless main-container">
+        {% if request.resolver_match.url_name != 'home' and request.resolver_match.url_name != 'login'  %}
+            <!-- Sidebar only appears on non-homepage pages -->
+            <aside class="column is-2 sidebar-container" id="sidebar">
+                {% include 'sidebar.html' %}
+            </aside>
+            <section class="column content-container">
+        {% else %}
+            <!-- Full-width content on homepage -->
+            <section class="column is-full content-container">
+        {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="notification is-{{ message.tags }} is-light">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+        </section>
     </main>
-    <footer>
-        <p>&copy; 2024 My Feed Reader</p>
-    </footer>
-    <button id="topBtn" title="Go to top">Top</button>
+    <button id="topBtn" class="button is-primary is-rounded scroll-top-btn">
+        <span class="icon">
+            <i class="fas fa-arrow-up"></i>
+        </span>
+    </button>
     <script src="{% static 'js/script.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

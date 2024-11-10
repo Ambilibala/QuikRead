@@ -1,19 +1,317 @@
-/* static/css/styles.css */
-#topBtn {
-    display: none;
+/* style.css */
+
+/* Global Styles */
+:root {
+    --dark-bg: #1a1a1a;
+    --darker-bg: #121212;
+    --lighter-dark: #2c2c2c;
+    --primary: #03e683;
+    --primary-light: #03e683;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Container */
+.main-container {
+    flex-grow: 1;
+    margin: 0;
+    min-height: calc(100vh - 3.25rem);
+}
+
+/* Navbar Styles */
+.navbar {
+    border-bottom: 1px solid var(--lighter-dark);
+}
+
+.brand-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.brand-logo {
+    max-height: 2rem !important;
+}
+
+.brand-text {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.nav-link {
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: var(--lighter-dark) !important;
+    color: var(--primary-light);
+}
+
+.navbar-dropdown {
+    border-top: 2px solid var(--primary);
+    background-color: var(--dark-bg);
+}
+
+.navbar-dropdown .navbar-item {
+    color: #fff;
+}
+
+.navbar-dropdown .navbar-item:hover {
+    background-color: var(--lighter-dark);
+    color: var(--primary-light);
+}
+
+/* Sidebar Styles */
+.sidebar-container {
+    background-color: var(--darker-bg);
+    border-right: 1px solid var(--lighter-dark);
+    padding: 1.5rem 1rem;
+    min-height: calc(100vh - 3.25rem);
+}
+
+.sidebar-menu {
+    position: sticky;
+    top: 1rem;
+}
+
+.menu-label {
+    color: #888;
+    font-size: 0.9em;
+    margin-bottom: 0.5em;
+}
+
+.menu-list a {
+    padding: 0.75em 1em;
+    margin-bottom: 0.25em;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.menu-list a:hover {
+    background-color: var(--lighter-dark);
+    color: var(--primary-light) !important;
+}
+.menu-list a:focus,
+.menu-list a:active,
+.menu-list a.is-active {
+    color: var(--primary-light);
+    background-color: none;
+}
+
+/* Content Container */
+.content-container {
+    padding: 1.5rem;
+    background-color: var(--dark-bg);
+    overflow-y: auto;
+}
+
+/* Notifications */
+.notification {
+    margin-bottom: 1rem;
+}
+
+.notification .delete {
+    transition: background-color 0.3s ease;
+}
+
+/* Scroll to Top Button */
+.scroll-top-btn {
     position: fixed;
-    bottom: 20px;
-    right: 30px;
+    bottom: 2rem;
+    right: 2rem;
+    display: none;
     z-index: 99;
-    font-size: 18px;
-    border: none;
-    outline: none;
-    background-color: #555;
-    color: white;
-    cursor: pointer;
-    padding: 15px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-top-btn:hover {
+    opacity: 1;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    .sidebar-container {
+        position: fixed;
+        z-index: 30;
+        left: -100%;
+        width: 80% !important;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar-container.is-active {
+        left: 0;
+    }
+
+    .content-container {
+        padding: 1rem;
+    }
+}
+/* Add these styles to your style.css */
+
+/* Sources Page Specific Styles */
+.has-background-dark-lighter {
+    background-color: var(--darker-bg) !important;
+}
+
+.source-item .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--lighter-dark);
+}
+
+.source-item .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.subscribe-form {
+    margin: 0;
+}
+
+.subscribe-form button {
+    transition: all 0.3s ease;
+}
+
+.subscribe-form button:hover {
+    transform: scale(1.1);
+}
+
+.source-item .card-content {
+    padding: 1rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .column.is-4 {
+        padding: 0.5rem;
+    }
+    
+    .box {
+        padding: 1rem;
+    }
+    
+    .source-item {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Animation for subscription status change */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.subscribe-form button:active {
+    animation: pulse 0.3s ease;
+}
+
+
+/* feed page displaying articles */
+.custom-card {
+    transition: transform 0.2s ease;
+}
+
+.custom-card:hover {
+    transform: translateY(-2px);
+}
+
+.read {
+    opacity: 0.7;
+}
+
+.read-more-button {
+    transition: background-color 0.3s ease;
+}
+
+.read-more-button:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--darker-bg) !important;
+}
+
+.button {
+    transition: all 0.3s ease;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.content {
+    color: #e4e4e4;
+    line-height: 1.7;
+}
+
+.content p {
+    margin-bottom: 1.5em;
+}
+
+.card {
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom styling for article content */
+#articleContent img, #articleSummary img {
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem 0;
     border-radius: 4px;
 }
-#topBtn:hover {
-    background-color: #333;
+
+#articleContent a, #articleSummary a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+#articleContent a:hover, #articleSummary a:hover {
+    text-decoration: underline;
+}
+#articleContent p,
+    #articleContent span,
+    #articleContent div,
+    #articleContent strong,
+    #articleContent b,
+    #articleContent em,
+    #articleContent i,
+    #articleContent u,
+    #articleContent li,
+    #articleContent h1,
+    #articleContent h2,
+    #articleContent h3,
+    #articleContent h4,
+    #articleContent h5,
+    #articleContent h6,
+    #articleSummary p,
+    #articleSummary span,
+    #articleSummary div,
+    #articleSummary strong,
+    #articleSummary b,
+    #articleSummary em,
+    #articleSummary i,
+    #articleSummary u,
+    #articleSummary li {
+        color: #e4e4e4 !important;
+    }
+/* Scale the logo image */
+/* Adjust the logo size */
+.brand-item {
+    padding: 0 !important; /* Remove extra padding */
+}
+
+.brand-logo {
+    width: 10rem; /* Adjust this as needed */
+    height: auto;
+    max-height: 3rem;
+    object-fit: contain; /* Ensures it fits within its container */
+}
+
+/* login page  */
+.button .is-fullwidth:hover
+{
+    background-color:#888;
 }

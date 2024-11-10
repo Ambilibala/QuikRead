@@ -9,6 +9,7 @@ class Language(models.Model):
         return self.name
 class Category(models.Model):
     name = models.CharField(max_length = 100)
+    language = models.ManyToManyField(Language, related_name='categories')
     def __str__(self):
         return self.name
 class Source(models.Model):

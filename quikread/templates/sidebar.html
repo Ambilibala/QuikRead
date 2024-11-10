@@ -1,0 +1,40 @@
+<aside class="menu sidebar-menu">
+    {% if user.is_authenticated %}
+        <p class="menu-label has-text-light">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-folder"></i></span>
+                <span>Categories</span>
+            </span>
+        </p>
+        <ul class="menu-list">
+            {% for category in categories %}
+                <li>
+                    <a class="has-text-light {% if request.resolver_match.url_name == 'feed_by_category' and request.resolver_match.kwargs.category_id|stringformat:'s' == category.id|stringformat:'s' %}is-active{% endif %}" 
+                    href="{% url 'feed_by_category' category.id %}">
+                        <span class="icon-text">
+                            <span class="icon"><i class="fas fa-tag"></i></span>
+                            <span>{{ category.name }}</span>
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <p class="menu-label has-text-light">
+            <span class="icon-text">
+                <span class="icon"><i class="fas fa-bookmark"></i></span>
+                <span>Saved Items</span>
+            </span>
+        </p>
+        <ul class="menu-list">
+            <li>
+                <a class="has-text-light {% if request.resolver_match.url_name == 'show_saved_articles' %}is-active{% endif %}" 
+                   href="{% url 'show_saved_articles' %}">
+                    <span class="icon-text">
+                        <span class="icon"><i class="fas fa-star"></i></span>
+                        <span>Saved Articles</span>
+                    </span>
+                </a>
+            </li>
+        </ul>
+    {% endif %}
+</aside>

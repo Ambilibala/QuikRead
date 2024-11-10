@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="hero is-fullheight" style="background-color: var(--dark-bg);">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+                    <div class="box" style="background-color: var(--lighter-dark); border-radius: 8px;">
+                        <div class="tabs is-centered mb-4">
+                            <ul>
+                                <li class="login-tab is-active" onclick="login()">
+                                    <a style="color: var(--primary);">Login</a>
+                                </li>
+                                <li class="register-tab" onclick="register()">
+                                    <a style="color: var(--primary);">Register</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form id="LoginForm" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="field">
+                                <label class="label has-text-white">Username</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" name="username" placeholder="Username" 
+                                           style="background-color: var(--darker-bg); color: white; border-color: var(--lighter-dark);">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label has-text-white">Password</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" name="password" placeholder="Password"
+                                           style="background-color: var(--darker-bg); color: white; border-color: var(--lighter-dark);">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" name="login" class="button is-fullwidth" 
+                                            style="background-color: var(--primary); color: var(--darker-bg);">
+                                        Login
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="has-text-centered mt-4">
+                                <a href="" class="has-text-primary">Forgot Password?</a>
+                            </div>
+
+                            {% if messages and login == True %}
+                            <div class="notification is-danger is-light mt-4">
+                                {% for message in messages %}
+                                <p>{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </form>
+
+                        <!-- Register Form -->
+                        <form id="RegForm" method="post" enctype="multipart/form-data" style="display: none;">
+                            {% csrf_token %}
+                            <div class="field">
+                                <label class="label has-text-white">Username</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" name="username" placeholder="Username"
+                                           style="background-color: var(--darker-bg); color: white; border-color: var(--lighter-dark);">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label has-text-white">Password</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" name="password" placeholder="Password"
+                                           style="background-color: var(--darker-bg); color: white; border-color: var(--lighter-dark);">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <button type="submit" name="register" class="button is-fullwidth"
+                                            style="background-color: var(--primary); color: var(--darker-bg);">
+                                        Register
+                                    </button>
+                                </div>
+                            </div>
+
+                            {% if messages and register == True %}
+                            <div class="notification is-danger is-light mt-4">
+                                {% for message in messages %}
+                                <p>{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script>
+    function register() {
+        document.getElementById('LoginForm').style.display = 'none';
+        document.getElementById('RegForm').style.display = 'block';
+        document.querySelector('.login-tab').classList.remove('is-active');
+        document.querySelector('.register-tab').classList.add('is-active');
+    }
+
+    function login() {
+        document.getElementById('RegForm').style.display = 'none';
+        document.getElementById('LoginForm').style.display = 'block';
+        document.querySelector('.register-tab').classList.remove('is-active');
+        document.querySelector('.login-tab').classList.add('is-active');
+    }
+
+    {% if register %}
+        register();
+    {% else %}
+        login();
+    {% endif %}
+</script>
+{% endblock %}
