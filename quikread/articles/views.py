@@ -10,14 +10,14 @@ from django.conf import settings
 # Create your views here.
 @login_required
 def view_articles(request):
-    user_articles = UserArticle.objects.filter(user=request.user).order_by('-article__published_date')
+    user_articles = UserArticle.objects.filter(user=request.user).order_by('-fetched_date')
     articles = [{'article': user_article.article, 'status': user_article.status} for user_article in user_articles]
     return render(request, 'feed_page.html', {'articles': articles})
 
 @login_required
 def articles_by_category(request, category_id):
     # print(request.resolver_match.kwargs.category_id )
-    user_articles = UserArticle.objects.filter(user = request.user, article__source__category_id = category_id).order_by('-article__published_date')[:300]
+    user_articles = UserArticle.objects.filter(user = request.user, article__source__category_id = category_id).order_by('-fetched_date')[:300]
     articles = [{'article': user_article.article, 'status': user_article.status} for user_article in user_articles]
     context={'articles':articles,'selected_category':category_id}
     return render(request, 'feed_page.html', {'articles': articles})
